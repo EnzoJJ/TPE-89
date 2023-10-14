@@ -1,0 +1,40 @@
+<?php require 'templates/header.phtml'; ?>
+
+<div class="container">
+    <h2>Listado de Reseñas</h2>
+    <div class="reseña-list">
+        <?php
+        try {
+            $db = new PDO('mysql:host=localhost;dbname=proyecto;charset=utf8mb4', 'root', '');
+
+            $query = "SELECT puntuacion, reseña, email FROM reseñas";
+
+            $stmt = $db->prepare($query);
+            $stmt->execute();
+
+            $reseñasHTML = ''; // Variable para almacenar el HTML de las reseñas
+
+            if ($stmt->rowCount() > 0) {
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $reseñasHTML .= "<div class='reseña-item'>";
+                    $reseñasHTML .= "<p><strong>Película:</strong> " . $row['pelicula'] . "</p>";
+                    $reseñasHTML .= "<p><strong>Reseña:</strong> " . $row['reseña'] . "</p>";
+                    $reseñasHTML .= "<p><strong>Email:</strong> " . $row['email'] . "</p>";
+                    $reseñasHTML .= "</div>";
+                }
+            } else {
+                $reseñasHTML = "<p>No se encontraron reseñas.</p>";
+            }
+
+            // Imprimir el HTML de las reseñas
+            echo $reseñasHTML;
+
+            $db = null;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        ?>
+    </div>
+</div>
+
+<?php require 'templates/footer.phtml'; ?>

@@ -1,0 +1,42 @@
+<?php require 'templates/header.phtml'; ?>
+
+<div class="container">
+    <h2>Listado de Películas</h2>
+    <div class="pelicula-list">
+        <?php
+        try {
+            $db = new PDO('mysql:host=localhost;dbname=proyecto;charset=utf8mb4', 'root', '');
+
+            $query = "SELECT Titulo AS pelicula_titulo, Director, `Fecha de lanzamiento`, Sinopsis
+                    FROM pelicula";
+
+            $stmt = $db->prepare($query);
+            $stmt->execute();
+
+            $peliculasHTML = ''; // Variable para almacenar el HTML de las películas
+
+            if ($stmt->rowCount() > 0) {
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $peliculasHTML .= "<div class='pelicula-item'>";
+                    $peliculasHTML .= "<h3>" . $row['pelicula_titulo'] . "</h3>";
+                    $peliculasHTML .= "<p><strong>Director:</strong> " . $row['Director'] . "</p>";
+                    $peliculasHTML .= "<p><strong>Fecha de lanzamiento:</strong> " . $row['Fecha de lanzamiento'] . "</p>";
+                    $peliculasHTML .= "<p><strong>Sinopsis:</strong> " . $row['Sinopsis'] . "</p>";
+                    $peliculasHTML .= "</div>";
+                }
+            } else {
+                $peliculasHTML = "<p>No se encontraron películas.</p>";
+            }
+
+            // Imprimir el HTML de las películas
+            echo $peliculasHTML;
+
+            $db = null;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        ?>
+    </div>
+</div>
+
+<?php require 'templates/footer.phtml'; ?>
