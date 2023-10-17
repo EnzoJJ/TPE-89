@@ -2,27 +2,62 @@
 
 <div class="container">
     <h2>Listado de Películas</h2>
+    <p>Categorías</p>
+    <form method="GET" action="<?= BASE_URL ?>listar">
+        <select class="form-select form-select-sm" aria-label=".form-select-sm example" name="categoria">
+            <option value=""></option>
+            <?php
+            // Obtener las categorías de la base de datos y llenar el select
+            try {
+                $db = new PDO('mysql:host=localhost;dbname=db_peliculas;charset=utf8mb4', 'root', '');
+
+                $query = "SELECT * FROM genero";
+
+                $stmt = $db->prepare($query);
+                $stmt->execute();
+
+                if ($stmt->rowCount() > 0) {
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        echo "<option value='" . $row['id_genero'] . "'>" . $row['nombre'] . "</option>";
+                    }
+                } else {
+                    echo "<option value=''>No hay categorías disponibles</option>";
+                }
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+            }
+            ?>
+        </select>
+        <button type="submit">Filtrar</button>
+    </form>
+
     <div class="pelicula-list">
         <?php
         try {
-            $db = new PDO('mysql:host=localhost;dbname=proyecto;charset=utf8mb4', 'root', '');
+            $db = new PDO('mysql:host=localhost;dbname=db_peliculas;charset=utf8mb4', 'root', '');
+            $categoriaSeleccionada = isset($_GET['categoria']) ? $_GET['categoria'] : null;
 
-            $query = "SELECT Titulo AS pelicula_titulo, Director, `Fecha de lanzamiento`, Sinopsis
-                    FROM pelicula";
+            $query = "SELECT Titulo AS pelicula_titulo, Director, `Fecha de lanzamiento`, Sinopsis, g.nombre AS Genero
+          FROM pelicula p
+          JOIN genero g ON p.id_genero = g.id_genero";
 
-            $stmt = $db->prepare($query);
+            if ($categoriaSeleccionada) {
+                // Modifica la consulta para incluir la condición del género seleccionado
+                $query .= " WHERE p.id_genero = :id_genero";
+
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':id_genero', $categoriaSeleccionada, PDO::PARAM_INT);
+            } else {
+                $stmt = $db->prepare($query);
+            }
+
             $stmt->execute();
 
             $peliculasHTML = ''; // Variable para almacenar el HTML de las películas
 
             if ($stmt->rowCount() > 0) {
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    $peliculasHTML .= "<div class='pelicula-item'>";
-                    $peliculasHTML .= "<h3>" . $row['pelicula_titulo'] . "</h3>";
-                    $peliculasHTML .= "<p><strong>Director:</strong> " . $row['Director'] . "</p>";
-                    $peliculasHTML .= "<p><strong>Fecha de lanzamiento:</strong> " . $row['Fecha de lanzamiento'] . "</p>";
-                    $peliculasHTML .= "<p><strong>Sinopsis:</strong> " . $row['Sinopsis'] . "</p>";
-                    $peliculasHTML .= "</div>";
+                    require_once 'templates/itemPelicula.phtml';
                 }
             } else {
                 $peliculasHTML = "<p>No se encontraron películas.</p>";

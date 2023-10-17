@@ -5,11 +5,14 @@ require_once './app/views/pelicula.view.php';
 class PeliculaController {
     private $model;
     private $view;
+    private $reviewController; // Add this line
+
 
     public function __construct() {
         $this->model = new PeliculaModel();
         $this->view = new Pelicula();
     }
+    
 
     public function listarPeliculas() {
         // Obtener la lista de películas desde el modelo
@@ -20,21 +23,13 @@ class PeliculaController {
     }
 
     public function mostrarDetallePelicula($idPelicula) {
-        // Obtener los detalles de una película desde el modelo
         $pelicula = $this->model->obtenerPeliculaPorId($idPelicula);
-
-        // Mostrar la vista de detalle de la película
-        $this->view->mostrarDetallePelicula($pelicula);
+        $reseñas = $this->model->obtenerReseñasPorPelicula($idPelicula);
+        $this->view->mostrarDetallePelicula($pelicula, $reseñas);
     }
-
-    public function agregarPelicula($titulo, $director, $fechaLanzamiento, $sinopsis, $genero) {
-        $exito = PeliculaModel::agregarPelicula($titulo, $director, $fechaLanzamiento, $sinopsis, $genero);
-
-        if ($exito) {
-            echo "La película se agregó correctamente.";
-        } else {
-            echo "Hubo un error al agregar la película.";
-        }
+    public function listarPeliculasPorCategoria($idCategoria) {
+        $peliculas = $this->model->obtenerPeliculasPorCategoria($idCategoria);
+        $this->view->showPeliculas($peliculas);
     }
 }
 ?>

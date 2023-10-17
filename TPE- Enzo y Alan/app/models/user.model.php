@@ -7,10 +7,13 @@ class UserModel {
         $this->db = new PDO('mysql:host=localhost;dbname=proyecto;charset=utf8', 'root', '');
     }
 
-    public function getByEmail($email) {
-        $query = $this->db->prepare('SELECT * FROM usuario WHERE email = ?');
-        $query->execute([$email]);
+    // En UserModel.php
+
+    public function getByUsername($username) {
+        $query = $this->db->prepare('SELECT * FROM usuario WHERE nombre = ?');
+        $query->execute([$username]);
 
         return $query->fetch(PDO::FETCH_OBJ);
     }
+
 }

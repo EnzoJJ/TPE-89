@@ -16,30 +16,38 @@ class AuthController {
         $this->view->showLogin();
     }
 
-    public function auth() {
-        $email = $_POST['email'];
-        $password = $_POST['password'];
+    // En AuthController.php
 
-        if (empty($email) || empty($password)) {
+    public function auth() {
+        // Obtener el nombre de usuario y contraseña del formulario
+        $username = isset($_POST['username']) ? $_POST['username'] : null;
+        $password = isset($_POST['password']) ? $_POST['password'] : null;
+    
+        if (empty($username) || empty($password)) {
             $this->view->showLogin('Faltan completar datos');
             return;
         }
-
-        // busco el usuario
-        $user = $this->model->getByEmail($email);
-        if ($user && password_verify($password, $user->password)) {
-            // ACA LO AUTENTIQUE
-            
+    
+        // Buscar el usuario por nombre de usuario
+        $user = $this->model->getByUsername($username);
+    
+        // Verificar si es el usuario especial con permisos de administrador
+        if ($username === 'webadmin' && $password === 'admin') {
+            // Otorgar permisos de administrador
+            $user = new stdClass();
+            $user->username = $username;
+            $user->isAdmin = true;
+        }
+    
+        if ($user && password_verify($password, $user->contraseña)) {
+            // Usuario autenticado
             AuthHelper::login($user);
-            
             header('Location: ' . BASE_URL);
         } else {
             $this->view->showLogin('Usuario inválido');
         }
     }
-
-    public function logout() {
-        AuthHelper::logout();
-        header('Location: ' . BASE_URL);    
-    }
+    
 }
+
+  

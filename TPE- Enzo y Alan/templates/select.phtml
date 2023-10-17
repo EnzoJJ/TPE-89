@@ -1,0 +1,21 @@
+<?php
+            // Obtener las categorías de la base de datos y llenar el select
+try {
+    $db = new PDO('mysql:host=localhost;dbname=db_peliculas;charset=utf8mb4', 'root', '');
+
+    $query = "SELECT * FROM genero";
+
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+
+    if ($stmt->rowCount() > 0) {
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            echo "<option value='" . $row['id_genero'] . "'>" . $row['nombre'] . "</option>";
+        }
+        } else {
+            echo "<option value=''>No hay categorías disponibles</option>";
+        }
+    } catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+?>
