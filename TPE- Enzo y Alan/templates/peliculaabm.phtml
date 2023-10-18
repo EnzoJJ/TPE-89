@@ -1,0 +1,24 @@
+<?php if (isset($_SESSION['USER_ID'])) : ?>
+    <div class="p-5 mb-2 bg-dark text-white">
+        <h1>Agregar Pelicula</h1>
+    <form method="POST" action="add">
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Titulo</label>
+            <input type="text" class="form-control" name="Titulo" aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Director</label>
+            <input type="text" class="form-control" name="Director">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Fecha de lanzamiento</label>
+            <input type="date" class="form-control" name="Fecha de lanzamiento">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Sinopsis</label>
+            <input type="text" class="form-control" name="Sinopsis">
+        </div>
+        <button type="submit" class="btn btn-success">Agregar</button>
+    </form>
+</div>
+<?php endif ?>
